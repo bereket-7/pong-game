@@ -1,10 +1,13 @@
-
 <template>
-    <div class="pong-game" @keydown="handleKeyDown" tabindex="0">
+  <div class="pong-game" @keydown="handleKeyDown" tabindex="0">
     <div class="game-board">
       <div class="paddle paddle-left" :style="{ top: paddleLeftY + 'px' }"></div>
       <div class="paddle paddle-right" :style="{ top: paddleRightY + 'px' }"></div>
       <div class="ball" :style="{ top: ballY + 'px', left: ballX + 'px' }"></div>
+    </div>
+    <div class="scores">
+      <span class="score-left">Player 1: {{ scoreLeft }}</span>
+      <span class="score-right">Player 2: {{ scoreRight }}</span>
     </div>
   </div>
 </template>
@@ -22,7 +25,9 @@ export default {
       paddleWidth: 10,
       ballSize: 10,
       canvasWidth: 600,
-      canvasHeight: 400
+      canvasHeight: 400,
+      scoreLeft: 0,
+      scoreRight: 0
     };
   },
   methods: {
@@ -48,6 +53,7 @@ export default {
       this.paddleLeftY = mouseY - this.paddleHeight / 2;
     },
     checkCollision() {
+
       if (this.ballX + this.ballSize >= this.canvasWidth) {
         this.ballSpeedX = -this.ballSpeedX;
       } else if (this.ballX <= 0) {
@@ -72,6 +78,24 @@ export default {
       ) {
         this.ballSpeedX = -this.ballSpeedX;
       }
+      if (this.ballX <= 0) {
+        // Player 2 scores
+        this.scoreRight++;
+        this.resetBall();
+      } else if (this.ballX + this.ballSize >= this.canvasWidth) {
+        // Player 1 scores
+        this.scoreLeft++;
+        this.resetBall();
+      }
+    },
+    resetBall() {
+      // Reset ball position to the center
+      this.ballX = this.canvasWidth / 2 - this.ballSize / 2;
+      this.ballY = this.canvasHeight / 2 - this.ballSize / 2;
+
+      // Reset ball speed and direction
+      this.ballSpeedX = -this.ballSpeedX;
+      this.ballSpeedY = -this.ballSpeedY;
     },
     gameLoop() {
       this.moveBall();
@@ -129,5 +153,20 @@ document.removeEventListener("mousemove", this.movePaddle);
   width: 10px;
   height: 10px;
   background-color: #fff;
+}
+.scores {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  color: #fff;
+  font-size: 18px;
+}
+
+.score-left {
+  margin-right: 20px;
+}
+
+.score-right {
+  margin-left: 20px;
 }
 </style>
