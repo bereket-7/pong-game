@@ -1,30 +1,94 @@
 <template>
-  <nav>
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </nav>
-  <router-view/>
+  <div class="pong-game">
+    <div class="game-board">
+      <div class="paddle paddle-left" :style="{ top: paddleLeftY + 'px' }"></div>
+      <div class="paddle paddle-right" :style="{ top: paddleRightY + 'px' }"></div>
+      <div class="ball" :style="{ top: ballY + 'px', left: ballX + 'px' }"></div>
+    </div>
+  </div>
 </template>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
+<script>
+export default {
+  data() {
+    return {
+      paddleLeftY: 0,
+      paddleRightY: 0,
+      ballX: 0,
+      ballY: 0,
+      ballSpeedX: 3,
+      ballSpeedY: 3,
+      gameLoop: null
+    };
+  },
+  mounted() {
+    this.startGame();
+  },
+  methods: {
+    startGame() {
+      this.gameLoop = setInterval(() => {
+        this.updateGame();
+      }, 16.67); // Run game loop at 60 FPS
+    },
+    updateGame() {
+      this.movePaddle();
+      this.moveBall();
+      this.checkCollision();
+    },
+    movePaddle() {
+      // Move paddles based on user input or AI logic
+      // Example: this.paddleLeftY = mouseY;
+    },
+    moveBall() {
+      this.ballX += this.ballSpeedX;
+      this.ballY += this.ballSpeedY;
+    },
+    checkCollision() {
+      // Check collision with walls and paddles
+      // Adjust ball speed and direction accordingly
+    }
+  },
+  beforeUnmount() {
+    clearInterval(this.gameLoop);
+  }
+};
+</script>
+
+<style scoped>
+.pong-game {
+  position: relative;
+  width: 600px;
+  height: 400px;
+  background-color: #000;
 }
 
-nav {
-  padding: 30px;
+.game-board {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 }
 
-nav a {
-  font-weight: bold;
-  color: #2c3e50;
+.paddle {
+  position: absolute;
+  width: 10px;
+  height: 60px;
+  background-color: #fff;
 }
 
-nav a.router-link-exact-active {
-  color: #42b983;
+.paddle-left {
+  left: 10px;
+}
+
+.paddle-right {
+  right: 10px;
+}
+
+.ball {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background-color: #fff;
 }
 </style>
