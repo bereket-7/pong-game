@@ -80,10 +80,9 @@ export default {
     }
   },
   mounted() {
-        // Start the game loop when the component is mounted
-        this.gameLoop();
-
-// Listen to mousemove event for paddle control
+    this.ballX = this.canvasWidth / 2 - this.ballSize / 2;
+  this.ballY = this.canvasHeight / 2 - this.ballSize / 2;
+  this.gameLoop();
 document.addEventListener("mousemove", this.movePaddle);
 },
 beforeUnmount() {
