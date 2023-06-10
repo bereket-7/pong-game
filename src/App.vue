@@ -5,17 +5,18 @@
       <div class="paddle paddle-right" :style="{ top: paddleRightY + 'px' }"></div>
       <div class="ball" :style="{ top: ballY + 'px', left: ballX + 'px' }"></div>
     </div>
+
     <div class="scores">
-      <span class="score-left">Player 1: {{ scoreLeft }}</span>
-      <span class="score-right">Player 2: {{ scoreRight }}</span>
-    </div>
+  <span class="score-left">Player 1: {{ scoreLeft }}</span>
+  <span class="score-right">Player 2: {{ scoreRight }}</span>
+</div>
 
+<div v-if="gameOver" class="game-over">
+  <h2>Game Over</h2>
+  <p>Player {{ scoreLeft > scoreRight ? '1' : '2' }} wins!</p>
+  <button @click="restartGame">Restart</button>
+</div>
 
-    <div v-if="gameOver" class="game-over">
-      <h2>Game Over</h2>
-      <p>Player {{ winningPlayer }} wins!</p>
-      <button @click="restartGame">Restart</button>
-    </div>
   </div>
 </template>
 
@@ -27,8 +28,8 @@ export default {
       paddleRightY: 0,
       ballX: 0,
       ballY: 0,
-      ballSpeedX: 5,
-      ballSpeedY: 5,
+      ballSpeedX: 3,
+      ballSpeedY: 3,
       paddleHeight: 80,
       paddleWidth: 10,
       ballSize: 10,
@@ -89,20 +90,16 @@ export default {
         this.ballSpeedX = -this.ballSpeedX;
       }
       if (this.ballX <= 0) {
-
         this.scoreRight++;
        this.resetBall();
       } else if (this.ballX + this.ballSize >= this.canvasWidth) {
-
         this.scoreLeft++;
- 
         this.resetBall();
       }
 
       if (this.scoreLeft >= this.winningScore || this.scoreRight >= this.winningScore) {
-        this.gameOver = true;
-      
-      }
+  this.gameOver = true;
+}
     },
     restartGame() {
       this.scoreLeft = 0;
@@ -116,6 +113,7 @@ export default {
 
       this.gameLoop();
     },
+
     resetBall() {
 
       this.ballX = this.canvasWidth / 2 - this.ballSize / 2;
@@ -126,10 +124,14 @@ export default {
       this.ballSpeedY = -this.ballSpeedY;
     },
     gameLoop() {
+      if (this.gameOver) {
+        return;
+      }
+
       this.moveBall();
       this.checkCollision();
       requestAnimationFrame(this.gameLoop);
-    }
+    },
   },
   mounted() {
     this.ballX = this.canvasWidth / 2 - this.ballSize / 2;
@@ -148,15 +150,18 @@ document.removeEventListener("mousemove", this.movePaddle);
 <style scoped>
 .pong-game {
   position: relative;
-  width: 600px;
+  width: 100%;
+  max-width: 600px;
   height: 400px;
-  background-color: #000;
+  margin: 0 auto;
+  background-color: #151616;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .game-board {
-  position: absolute;
-  top: 0;
-  left: 0;
+  position: relative;
   width: 100%;
   height: 100%;
 }
@@ -164,7 +169,7 @@ document.removeEventListener("mousemove", this.movePaddle);
 .paddle {
   position: absolute;
   width: 10px;
-  height: 60px;
+  height: 80px;
   background-color: #fff;
 }
 
@@ -180,22 +185,25 @@ document.removeEventListener("mousemove", this.movePaddle);
   position: absolute;
   width: 10px;
   height: 10px;
-  background-color: #fff;
+  background-color: #ffffff;
+  border-radius: 50%;
 }
+
 .scores {
   position: absolute;
   top: 10px;
-  left: 10px;
-  color: #fff;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #0c0101;
   font-size: 18px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.score-left {
-  margin-right: 20px;
-}
-
+.score-left,
 .score-right {
-  margin-left: 20px;
+  margin: 0 20px;
 }
 
 .game-over {
@@ -204,7 +212,7 @@ document.removeEventListener("mousemove", this.movePaddle);
   left: 50%;
   transform: translate(-50%, -50%);
   text-align: center;
-  color: #fff;
+  color: #f70f0f;
 }
 
 .game-over h2 {
@@ -220,9 +228,10 @@ document.removeEventListener("mousemove", this.movePaddle);
 .game-over button {
   font-size: 16px;
   padding: 10px 20px;
-  background-color: #fff;
+  background-color: #09cc43;
   color: #000;
   border: none;
   cursor: pointer;
 }
+
 </style>
