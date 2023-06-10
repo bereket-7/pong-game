@@ -10,11 +10,6 @@
       <span class="score-right">Player 2: {{ scoreRight }}</span>
     </div>
 
-    <audio ref="paddleSound" src="path-to-paddle-sound.mp3"></audio>
-    <audio ref="collisionSound" src="path-to-collision-sound.mp3"></audio>
-    <audio ref="scoreSound" src="path-to-score-sound.mp3"></audio>
-    <audio ref="gameOverSound" src="path-to-game-over-sound.mp3"></audio>
-
 
     <div v-if="gameOver" class="game-over">
       <h2>Game Over</h2>
@@ -23,6 +18,7 @@
     </div>
   </div>
 </template>
+
 <script>
 export default {
   data() {
@@ -95,18 +91,17 @@ export default {
       if (this.ballX <= 0) {
 
         this.scoreRight++;
-        this.playSound("scoreSound");
-        this.resetBall();
+       this.resetBall();
       } else if (this.ballX + this.ballSize >= this.canvasWidth) {
 
         this.scoreLeft++;
-        this.playSound("scoreSound");
+ 
         this.resetBall();
       }
 
       if (this.scoreLeft >= this.winningScore || this.scoreRight >= this.winningScore) {
         this.gameOver = true;
-        this.playSound("gameOverSound");
+      
       }
     },
     restartGame() {
