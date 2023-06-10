@@ -1,5 +1,6 @@
+
 <template>
-  <div class="pong-game">
+    <div class="pong-game" @keydown="handleKeyDown" tabindex="0">
     <div class="game-board">
       <div class="paddle paddle-left" :style="{ top: paddleLeftY + 'px' }"></div>
       <div class="paddle paddle-right" :style="{ top: paddleRightY + 'px' }"></div>
@@ -7,7 +8,6 @@
     </div>
   </div>
 </template>
-
 <script>
 export default {
   data() {
@@ -25,49 +25,39 @@ export default {
       canvasHeight: 400
     };
   },
-  mounted() {
-    this.startGame();
-  },
   methods: {
-    startGame() {
-      this.gameLoop = setInterval(() => {
-        this.updateGame();
-      }, 16.67);
-    },
-    updateGame() {
-      this.movePaddle();
-      this.moveBall();
-      this.checkCollision();
-    },
-    movePaddle(event) {
-      // Logic for moving the paddles based on user input
-      // Update paddleLeftY and paddleRightY values accordingly
-      const mouseY = event.clientY;
-      this.paddleLeftY = mouseY - this.paddleHeight / 2;
+    handleKeyDown(event) {
+      const keyCode = event.keyCode;
+      if (keyCode === 87) {
+        this.paddleLeftY -= 10;
+      } else if (keyCode === 83) { 
+        this.paddleLeftY += 10;
+      }
+      if (keyCode === 38) { 
+        this.paddleRightY -= 10;
+      } else if (keyCode === 40) { 
+        this.paddleRightY += 10;
+      }
     },
     moveBall() {
-      // Logic for moving the ball
-      // Update ballX and ballY values based on ballSpeedX and ballSpeedY
       this.ballX += this.ballSpeedX;
       this.ballY += this.ballSpeedY;
     },
+    movePaddle(event) {
+      const mouseY = event.clientY;
+      this.paddleLeftY = mouseY - this.paddleHeight / 2;
+    },
     checkCollision() {
-      // Logic for checking collisions
-      // Adjust ballSpeedX and ballSpeedY if the ball hits a paddle or wall
       if (this.ballX + this.ballSize >= this.canvasWidth) {
-        // Ball hits the right wall
         this.ballSpeedX = -this.ballSpeedX;
       } else if (this.ballX <= 0) {
-        // Ball hits the left wall
         this.ballSpeedX = -this.ballSpeedX;
       }
 
       if (this.ballY + this.ballSize >= this.canvasHeight || this.ballY <= 0) {
-        // Ball hits the top or bottom wall
         this.ballSpeedY = -this.ballSpeedY;
       }
 
-      // Check collision with left paddle
       if (
         this.ballX <= this.paddleWidth &&
         this.ballY + this.ballSize >= this.paddleLeftY &&
@@ -75,8 +65,6 @@ export default {
       ) {
         this.ballSpeedX = -this.ballSpeedX;
       }
-
-      // Check collision with right paddle
       if (
         this.ballX + this.ballSize >= this.canvasWidth - this.paddleWidth &&
         this.ballY + this.ballSize >= this.paddleRightY &&
@@ -86,17 +74,23 @@ export default {
       }
     },
     gameLoop() {
-      // The main game loop
       this.moveBall();
       this.checkCollision();
-
-      // Call gameLoop() recursively to keep the game running
       requestAnimationFrame(this.gameLoop);
     }
   },
-  beforeUnmount() {
-    clearInterval(this.gameLoop);
-  }
+  mounted() {
+        // Start the game loop when the component is mounted
+        this.gameLoop();
+
+// Listen to mousemove event for paddle control
+document.addEventListener("mousemove", this.movePaddle);
+},
+beforeUnmount() {
+document.removeEventListener("mousemove", this.movePaddle);
+    // Call moveBall(), movePaddle(), and checkCollision() methods
+    // using setInterval or requestAnimationFrame for game loop
+  },
 };
 </script>
 
