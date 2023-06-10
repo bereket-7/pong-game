@@ -9,6 +9,18 @@
       <span class="score-left">Player 1: {{ scoreLeft }}</span>
       <span class="score-right">Player 2: {{ scoreRight }}</span>
     </div>
+
+    <audio ref="paddleSound" src="path-to-paddle-sound.mp3"></audio>
+    <audio ref="collisionSound" src="path-to-collision-sound.mp3"></audio>
+    <audio ref="scoreSound" src="path-to-score-sound.mp3"></audio>
+    <audio ref="gameOverSound" src="path-to-game-over-sound.mp3"></audio>
+
+
+    <div v-if="gameOver" class="game-over">
+      <h2>Game Over</h2>
+      <p>Player {{ winningPlayer }} wins!</p>
+      <button @click="restartGame">Restart</button>
+    </div>
   </div>
 </template>
 <script>
@@ -27,7 +39,9 @@ export default {
       canvasWidth: 600,
       canvasHeight: 400,
       scoreLeft: 0,
-      scoreRight: 0
+      scoreRight: 0,
+      gameOver: false,
+      winningScore: 5
     };
   },
   methods: {
@@ -79,21 +93,40 @@ export default {
         this.ballSpeedX = -this.ballSpeedX;
       }
       if (this.ballX <= 0) {
-        // Player 2 scores
+
         this.scoreRight++;
+        this.playSound("scoreSound");
         this.resetBall();
       } else if (this.ballX + this.ballSize >= this.canvasWidth) {
-        // Player 1 scores
+
         this.scoreLeft++;
+        this.playSound("scoreSound");
         this.resetBall();
       }
+
+      if (this.scoreLeft >= this.winningScore || this.scoreRight >= this.winningScore) {
+        this.gameOver = true;
+        this.playSound("gameOverSound");
+      }
+    },
+    restartGame() {
+      this.scoreLeft = 0;
+      this.scoreRight = 0;
+      this.gameOver = false;
+
+      this.resetBall();
+      this.paddleLeftY = (this.canvasHeight - this.paddleHeight) / 2;
+      this.paddleRightY = (this.canvasHeight - this.paddleHeight) / 2;
+
+
+      this.gameLoop();
     },
     resetBall() {
-      // Reset ball position to the center
+
       this.ballX = this.canvasWidth / 2 - this.ballSize / 2;
       this.ballY = this.canvasHeight / 2 - this.ballSize / 2;
 
-      // Reset ball speed and direction
+
       this.ballSpeedX = -this.ballSpeedX;
       this.ballSpeedY = -this.ballSpeedY;
     },
@@ -111,8 +144,8 @@ document.addEventListener("mousemove", this.movePaddle);
 },
 beforeUnmount() {
 document.removeEventListener("mousemove", this.movePaddle);
-    // Call moveBall(), movePaddle(), and checkCollision() methods
-    // using setInterval or requestAnimationFrame for game loop
+
+
   },
 };
 </script>
@@ -168,5 +201,33 @@ document.removeEventListener("mousemove", this.movePaddle);
 
 .score-right {
   margin-left: 20px;
+}
+
+.game-over {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  color: #fff;
+}
+
+.game-over h2 {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.game-over p {
+  font-size: 18px;
+  margin-bottom: 20px;
+}
+
+.game-over button {
+  font-size: 16px;
+  padding: 10px 20px;
+  background-color: #fff;
+  color: #000;
+  border: none;
+  cursor: pointer;
 }
 </style>
