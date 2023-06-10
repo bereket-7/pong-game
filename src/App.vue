@@ -7,19 +7,17 @@
     </div>
 
     <div class="scores">
-  <span class="score-left">Player 1: {{ scoreLeft }}</span>
-  <span class="score-right">Player 2: {{ scoreRight }}</span>
-</div>
+      <span class="score-left">Player 1: {{ scoreLeft }}</span>
+      <span class="score-right">Player 2: {{ scoreRight }}</span>
+    </div>
 
-<div v-if="gameOver" class="game-over">
-  <h2>Game Over</h2>
-  <p>Player {{ scoreLeft > scoreRight ? '1' : '2' }} wins!</p>
-  <button @click="restartGame">Restart</button>
-</div>
-
+    <div v-if="gameOver" class="game-over">
+      <h2>Game Over</h2>
+      <p>Player {{ scoreLeft > scoreRight ? 'one' : 'two' }} wins!</p>
+      <button @click="restartGame">Restart</button>
+    </div>
   </div>
 </template>
-
 <script>
 export default {
   data() {
@@ -44,14 +42,17 @@ export default {
   methods: {
     handleKeyDown(event) {
       const keyCode = event.keyCode;
-      if (keyCode === 87) {
+      if (keyCode === 87 && this.paddleLeftY > 0) {
         this.paddleLeftY -= 10;
-      } else if (keyCode === 83) { 
+      } else if (keyCode === 83 && this.paddleLeftY < this.canvasHeight - this.paddleHeight) {
         this.paddleLeftY += 10;
       }
-      if (keyCode === 38) { 
+      if (keyCode === 38 && this.paddleRightY > 0) {
         this.paddleRightY -= 10;
-      } else if (keyCode === 40) { 
+      } else if (
+        keyCode === 40 &&
+        this.paddleRightY < this.canvasHeight - this.paddleHeight
+      ) {
         this.paddleRightY += 10;
       }
     },
@@ -135,14 +136,12 @@ export default {
   },
   mounted() {
     this.ballX = this.canvasWidth / 2 - this.ballSize / 2;
-  this.ballY = this.canvasHeight / 2 - this.ballSize / 2;
-  this.gameLoop();
-document.addEventListener("mousemove", this.movePaddle);
-},
-beforeUnmount() {
-document.removeEventListener("mousemove", this.movePaddle);
-
-
+    this.ballY = this.canvasHeight / 2 - this.ballSize / 2;
+    this.gameLoop();
+    document.addEventListener("mousemove", this.movePaddle);
+  },
+  beforeUnmount() {
+    document.removeEventListener("mousemove", this.movePaddle);
   },
 };
 </script>
@@ -170,7 +169,7 @@ document.removeEventListener("mousemove", this.movePaddle);
   position: absolute;
   width: 10px;
   height: 80px;
-  background-color: #fff;
+  background-color: #ffffff;
 }
 
 .paddle-left {
@@ -183,8 +182,8 @@ document.removeEventListener("mousemove", this.movePaddle);
 
 .ball {
   position: absolute;
-  width: 10px;
-  height: 10px;
+  width: 20px;
+  height: 20px;
   background-color: #ffffff;
   border-radius: 50%;
 }
