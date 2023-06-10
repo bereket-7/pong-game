@@ -16,9 +16,13 @@ export default {
       paddleRightY: 0,
       ballX: 0,
       ballY: 0,
-      ballSpeedX: 3,
-      ballSpeedY: 3,
-      gameLoop: null
+      ballSpeedX: 5,
+      ballSpeedY: 5,
+      paddleHeight: 80,
+      paddleWidth: 10,
+      ballSize: 10,
+      canvasWidth: 600,
+      canvasHeight: 400
     };
   },
   mounted() {
@@ -28,24 +32,66 @@ export default {
     startGame() {
       this.gameLoop = setInterval(() => {
         this.updateGame();
-      }, 16.67); // Run game loop at 60 FPS
+      }, 16.67);
     },
     updateGame() {
       this.movePaddle();
       this.moveBall();
       this.checkCollision();
     },
-    movePaddle() {
-      // Move paddles based on user input or AI logic
-      // Example: this.paddleLeftY = mouseY;
+    movePaddle(event) {
+      // Logic for moving the paddles based on user input
+      // Update paddleLeftY and paddleRightY values accordingly
+      const mouseY = event.clientY;
+      this.paddleLeftY = mouseY - this.paddleHeight / 2;
     },
     moveBall() {
+      // Logic for moving the ball
+      // Update ballX and ballY values based on ballSpeedX and ballSpeedY
       this.ballX += this.ballSpeedX;
       this.ballY += this.ballSpeedY;
     },
     checkCollision() {
-      // Check collision with walls and paddles
-      // Adjust ball speed and direction accordingly
+      // Logic for checking collisions
+      // Adjust ballSpeedX and ballSpeedY if the ball hits a paddle or wall
+      if (this.ballX + this.ballSize >= this.canvasWidth) {
+        // Ball hits the right wall
+        this.ballSpeedX = -this.ballSpeedX;
+      } else if (this.ballX <= 0) {
+        // Ball hits the left wall
+        this.ballSpeedX = -this.ballSpeedX;
+      }
+
+      if (this.ballY + this.ballSize >= this.canvasHeight || this.ballY <= 0) {
+        // Ball hits the top or bottom wall
+        this.ballSpeedY = -this.ballSpeedY;
+      }
+
+      // Check collision with left paddle
+      if (
+        this.ballX <= this.paddleWidth &&
+        this.ballY + this.ballSize >= this.paddleLeftY &&
+        this.ballY <= this.paddleLeftY + this.paddleHeight
+      ) {
+        this.ballSpeedX = -this.ballSpeedX;
+      }
+
+      // Check collision with right paddle
+      if (
+        this.ballX + this.ballSize >= this.canvasWidth - this.paddleWidth &&
+        this.ballY + this.ballSize >= this.paddleRightY &&
+        this.ballY <= this.paddleRightY + this.paddleHeight
+      ) {
+        this.ballSpeedX = -this.ballSpeedX;
+      }
+    },
+    gameLoop() {
+      // The main game loop
+      this.moveBall();
+      this.checkCollision();
+
+      // Call gameLoop() recursively to keep the game running
+      requestAnimationFrame(this.gameLoop);
     }
   },
   beforeUnmount() {
